@@ -37,51 +37,52 @@
 Как коннекшн готов, нам нужна только одна команда:
 `rclone sync`
 
-Чтобы не прописывать её в ручную я написал Lua скрипт, который будет делать это за меня.
-```lua
-#!/usr/local/bin/lua
+Чтобы не прописывать каждый раз ручками используем скрипт:
+```python
+#!/usr/bin/env python3
 
-local local_folder = "/home/ryzh/Downloads/Programs/Obsidian/Vaults"
-local remote_folder = "Vaults"
-local conn = "Drive:"
+import subprocess
+import sys
 
----Копирует содержимое папки `source` в папку `destination`
----Пушит изменения в Google Drive
-local function sync_push(source, connection, destination)
-    local cmd = "rclone sync " ..
-        source .. " " ..
-        connection .. destination
-    return os.execute(cmd)
-end
+local_folder = "/home/ryzh/Downloads/Programs/Obsidian/Vaults"
+remote_folder = "Vaults"
+conn = "Drive:"
 
----Копирует содержимое папки `source` в папку `destination`
----Пуллит изменения из Google Drive
-local function sync_pull(source, connection, destination)
-    local cmd = "rclone sync " ..
-        connection .. source ..
-        " " .. destination
-    return os.execute(cmd)
-end
+def sync_push(source: str, connection: str, destination: str):
+    return subprocess.run(["rclone", "sync", source, connection+destination], capture_output=True, timeout=2*60)
 
-print("Hello from syncing program!")
-local command = arg[1]
-if (command ~= "pull") and (command ~= "push") then
-    print("Usage:")
-    print([[
+
+def sync_pull(source: str, connection: str, destination: str):
+    return subprocess.run(["rclone", "sync", connection+source, destination], capture_output=True, timeout=2*60)
+
+
+def print_usage():
+    print("""
+Usage:
     for getting changes from the google drive:
         sync-vaults pull
     for submitting changes to google drive:
         sync-vaults push
-]])
-else
-    if command == "push" then
-        print("Running push command")
-        print(sync_push(local_folder, conn, remote_folder))
-    elseif command == "pull" then
-        print("Running pull command")
-        print(sync_pull(remote_folder, conn, local_folder))
-    end
-end
+""")
+
+
+print("Hello from Syncing Vaults!")
+command = sys.argv
+if len(command) == 2:
+    command = command[1]
+    if command not in ["pull", "push", "version"]:
+        print_usage()
+    else:
+        if command == "push":
+            print("Running push command")
+            print(sync_push(local_folder, conn, remote_folder))
+        elif command == "pull":
+            print("Running pull command")
+            print(sync_pull(remote_folder, conn, local_folder))
+        else:
+            print("Syncing Vaults v2.0")
+else:
+    print_usage()
 ```
 Имя у этого файла `sync-vaults` и важно добавить права на исполнение для этого файла: `chmod +x sync-vaults`.
  И ещё я добавил путь до папки в которой он находится в `.bashrc`:
