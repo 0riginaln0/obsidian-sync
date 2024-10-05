@@ -37,77 +37,8 @@
 Как коннекшн готов, нам нужна только одна команда:
 `rclone sync`
 
-Чтобы не прописывать каждый раз ручками используем скрипт:
-```python
-#!/usr/bin/env python3
+Чтобы не прописывать каждый раз ручками используем [скрипт на Python](https://github.com/0riginaln0/obsidian-sync/blob/main/sync-vaults)
 
-import subprocess
-import sys
-import threading
-import time
-import itertools
-
-local_folder = "/home/ryzh/Downloads/Programs/Obsidian/Vaults"
-remote_folder = "Vaults"
-conn = "Drive:"
-
-def sync_push(source: str, connection: str, destination: str):
-    return subprocess.run(["rclone", "sync", source, connection + destination], capture_output=True, timeout=2 * 60)
-
-def sync_pull(source: str, connection: str, destination: str):
-    return subprocess.run(["rclone", "sync", connection + source, destination], capture_output=True, timeout=2 * 60)
-
-def print_usage():
-    print("""
-Usage:
-    for getting changes from the google drive:
-        sync-vaults pull
-    for submitting changes to google drive:
-        sync-vaults push
-    for knowing version:
-        sync-vaults version
-""")
-
-def spinner():
-    """Display a loading spinner while the command is running."""
-    for c in itertools.cycle(['|', '/', '-', '\\']):
-        if not running:
-            break
-        print(f'\rLoading... {c}', end='', flush=True)
-        time.sleep(0.1)
-
-print("Hello from Syncing Vaults!")
-command = sys.argv
-if len(command) == 2:
-    command = command[1]
-    if command not in ["pull", "push", "version"]:
-        print_usage()
-    else:
-        if command == "push":
-            print("Running push command")
-            running = True
-            spinner_thread = threading.Thread(target=spinner)
-            spinner_thread.start()
-            result = sync_push(local_folder, conn, remote_folder)
-            running = False
-            spinner_thread.join()
-            print("\rDone!          ")  # Clear the spinner line
-            print(result)
-        elif command == "pull":
-            print("Running pull command")
-            running = True
-            spinner_thread = threading.Thread(target=spinner)
-            spinner_thread.start()
-            result = sync_pull(remote_folder, conn, local_folder)
-            running = False
-            spinner_thread.join()
-            print("\rDone!          ")  # Clear the spinner line
-            print(result)
-        else:
-            print("Syncing Vaults v2.1")
-else:
-    print_usage()
-```
 Имя у этого файла `sync-vaults` и важно добавить права на исполнение для этого файла: `chmod +x sync-vaults`.
  И ещё я добавил путь до папки в которой он находится в `.bashrc`:
 	`export PATH=$PATH:/home/ryzh/Downloads/Programs/Obsidian`
