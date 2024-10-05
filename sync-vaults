@@ -41,36 +41,42 @@ def spinner():
         time.sleep(0.1)
 
 
-def run_command(command):
+def run_sync_subprocess(sync_subprocess):
     global running
     running = True
     spinner_thread = threading.Thread(target=spinner)
     spinner_thread.start()
-    result = command()
+    result = sync_subprocess()
     running = False
     spinner_thread.join()
-    print("\rDone!          ")  # Clear the spinner line
+    print("\rDone!")  # Clear the spinner line
     print(result)
 
 
-print("Hello from Syncing Vaults!")
 local_folder = "/home/ryzh/Downloads/Programs/Obsidian/Vaults"
 remote_folder = "Vaults"
 conn = "Drive:"
 
-command = sys.argv
-match len(command):
+
+def handle_command(command):
+    match command:
+        case "push":
+            print("Running push command")
+            run_sync_subprocess(lambda: sync(local_folder, conn + remote_folder))
+        case "pull":
+            print("Running pull command")
+            run_sync_subprocess(lambda: sync(conn + remote_folder, local_folder))
+        case "version":
+            print("Syncing Vaults v2.2")
+        case _:
+            print_usage()
+
+
+print("Hello from Syncing Vaults!")
+
+args = sys.argv
+match len(args):
     case 2:
-        match command[1]:
-            case "push":
-                print("Running push command")
-                run_command(lambda: sync(local_folder, conn + remote_folder))
-            case "pull":
-                print("Running pull command")
-                run_command(lambda: sync(conn + remote_folder, local_folder))
-            case "version":
-                print("Syncing Vaults v2.2")
-            case _:
-                print_usage()
+        handle_command(args[1])
     case _:
         print_usage()
