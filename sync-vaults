@@ -2,14 +2,38 @@
 
 import subprocess
 import sys
-import threading
+from threading import Event, Thread
 import time
 import itertools
 
 
+def spin_around(sync_subprocess):
+    def wrapper(*args, **kwargs):
+        def spinner_goes_brrrrrrrr(stop: Event):
+            for c in itertools.cycle(["|", "/", "-", "\\"]):
+                if stop.is_set():
+                    break
+                print(f"\rLoading... {c}", end="", flush=True)
+                time.sleep(0.1)
+
+        stop = Event()
+        spinner = Thread(target=spinner_goes_brrrrrrrr, args=(stop,))
+        spinner.start()
+        result = sync_subprocess(*args, **kwargs)
+        stop.set()
+        spinner.join()
+        print("\rDone!       ")
+        print(result)
+
+    return wrapper
+
+
+@spin_around
 def sync(source, destination):
+    """Run `rclone sync <source> <destination>` command with passed `source` and `destination` parameters"""
+    print(f"\r    rclone sync {source} {destination}")
     return subprocess.run(
-        ["rclone", "sync", source, destination],
+        args=["rclone", "sync", source, destination],
         capture_output=True,
         timeout=2 * 60,
     )
@@ -29,30 +53,6 @@ Usage:
     )
 
 
-running = False
-
-
-def spinner():
-    """Display a loading spinner while the command is running."""
-    for c in itertools.cycle(["|", "/", "-", "\\"]):
-        if not running:
-            break
-        print(f"\rLoading... {c}", end="", flush=True)
-        time.sleep(0.1)
-
-
-def run_sync_subprocess(sync_subprocess):
-    global running
-    running = True
-    spinner_thread = threading.Thread(target=spinner)
-    spinner_thread.start()
-    result = sync_subprocess()
-    running = False
-    spinner_thread.join()
-    print("\rDone!")  # Clear the spinner line
-    print(result)
-
-
 local_folder = "/home/ryzh/Downloads/Programs/Obsidian/Vaults"
 remote_folder = "Vaults"
 conn = "Drive:"
@@ -62,17 +62,15 @@ def handle_command(command):
     match command:
         case "push":
             print("Running push command")
-            run_sync_subprocess(lambda: sync(local_folder, conn + remote_folder))
+            sync(local_folder, conn + remote_folder)
         case "pull":
             print("Running pull command")
-            run_sync_subprocess(lambda: sync(conn + remote_folder, local_folder))
+            sync(conn + remote_folder, local_folder)
         case "version":
-            print("Syncing Vaults v2.2")
+            print("Syncing Vaults v2.3")
         case _:
             print_usage()
 
-
-print("Hello from Syncing Vaults!")
 
 args = sys.argv
 match len(args):
