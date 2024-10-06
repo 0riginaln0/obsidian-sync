@@ -1,45 +1,49 @@
-Как я заменил Notion на Obsidian и настроил синхронизацию заметок для всех своих устройств (Windows, Android, Linux)
+How I set up Obsidian vaults synchronization for all my devices (Windows, Android, Linux)
 
-# Введение
-Я настроил синхронизацию через гугл диск. На нём, как я знаю, всем дают 15гб, и этого вполне хватит для текстовых файлов.
+# Intro
+I've set up syncing through google drive. As I know, they give 15gb to everyone, which is enough for text files.
 
 
-# Настройка синхронизации
-По итогу у меня:
-- на Windows синхронизация работает в автоматическом режиме
-- на Android в полуавтоматическом режиме
-- на Linux в ручном режиме
+# Configuring synchronization
+Bottom line for me:
+- on Windows synchronization works in automatic mode
+- on Android in semi-automatic mode
+- on Linux in manual mode
 
-В самом Гугл Диске создал папку Vaults в которой будут лежать все хранилища Obsidian. У меня пока только одно хранилище - Main. Поэтому в Гугл Драйве структура будет такая `Vaults/Main`. 
+In Google Drive itself, I created a Vaults folder where all Obsidian storages will be located. I have only one vault so far - Main. Therefore, the structure in Google Drive will be `Vaults/Main`.
+
+
 ## Windows
-Скачал [Google Drive For Desktop](https://support.google.com/drive/answer/10838124?hl=en)
-[Туториал как настроить эту программу](https://youtu.be/26PKoz3yb0M?si=zc3H4xqctV0H6mHG)
-Подключил свой гугл аккаунт.
-Все настройки можно пропускать, так как они нам не нужны.
+Download [Google Drive For Desktop](https://support.google.com/drive/answer/10838124?hl=en)
+Tutorial](https://youtu.be/26PKoz3yb0M?si=zc3H4xqctV0H6mHG)
+I'm logged into my google account.
+All settings can be skipped, as we don't need them.
 
-А дальше надо эту папку Vaults сделать доступной оффлайн. Для этого входим в проводник, в диск гугл драйва, щёлкаем правой кнопкой мышки на `Vaults` -> `Оффлайн-доступ` -> `Оффлайн-доступ включён`
-Всё. Теперь можно создавать в папке Vaults свои хранилища из Obsidian и они сами будут синхронизироваться в автоматическом режиме.
+And then we need to make this Vaults folder available offline. To do this, enter Explorer, google drive, right-click on `Vaults` -> `Offline access` -> `Offline access enabled`.
+That's it. Now you can create your Obsidian vaults in the Vaults folder and they will synchronize themselves automatically.
+
 
 # Android
-Скачал приложение FolderSync от Tacit Dynamics
-Делал всё по этому [видео-туториалу](https://youtu.be/0LZSFvyCmEk?si=IxG-t7yAbtnKdu4p) . Интерфейс немного изменился, но думаю проблем понять что где не будет.
+Download FolderSync by Tacit Dynamics
+Everything done with this [tutorial](https://youtu.be/0LZSFvyCmEk?si=IxG-t7yAbtnKdu4p). The interface has changed a bit, but I think there will be no problems to understand what is where.
 
-Там всё просто. Главное только чтобы вы выбрали `Two-way` соединение. И правильно выбрали папку `Vaults` гугл драйва и папку на телефоне с которой будет всё синхронизироваться. И ещё поставить галочку *"Синхронизировать удаления"*. В настройках синхронизации можно выбрать как часто приложение будет само синхронизироваться. Я выбрал один раз в 12 часов. Чаще мне не надо, потому что мне не сложно зайти в FolderSync и прожать кнопку синхронизации до и после работы в Obsidian.
+It's simple. The only thing that matters is that you choose a two-way connection. And correctly select the `Vaults` folder of Google Drive and the folder on your phone with which everything will be synchronized. And also check the box *"Synchronize deletions "*. In the synchronization settings you can choose how often the application will synchronize itself. I chose once every 12 hours. I don't need it more often, because it's not difficult for me to go to FolderSync and press the synchronization button before and after working in Obsidian.
+
 
 # Linux
 
-Устанавливаем [Rclone](https://rclone.org/)
-Эта утилита позволит нам синхронизировать локальную папку с папкой из гугл диска.
-По Rclone есть [туториал на русском](https://www.youtube.com/watch?v=qKw8pNC_dt8&t=605s). Чисто понять что да как. 
-По туториалу добавляем коннекшн к Google Drive. GOOGLE DRIVE. google drive. (не перепутайте с другими облачными хранилищами)
-В процессе можете сверяться с [официальным туториалом](https://rclone.org/drive/).
+Install [Rclone](https://rclone.org/)
+This utility will allow us to synchronize a local folder with a folder from google drive.
+Rclone has a [tutorial](https://www.youtube.com/watch?v=qKw8pNC_dt8&t=605s). Just to understand what is going on. 
+According to the tutorial add a connection to Google Drive. GOOGLE DRIVE. google drive. (do not confuse with other cloud storage).
+You can look up into [official tutorial](https://rclone.org/drive/) during the process.
 
-Как коннекшн готов, нам нужна только одна команда:
+Once the connection is ready, we only need one command:
 `rclone sync`
 
-Чтобы не прописывать каждый раз ручками используем [скрипт на Python](https://github.com/0riginaln0/obsidian-sync/blob/main/sync-vaults)
+For automatisation use [Python script](https://github.com/0riginaln0/obsidian-sync/blob/main/sync-vaults)
 
-Имя у этого файла `sync-vaults` и важно добавить права на исполнение для этого файла: `chmod +x sync-vaults`.
- И ещё я добавил путь до папки в которой он находится в `.bashrc`:
-	`export PATH=$PATH:/home/ryzh/Downloads/Programs/Obsidian`
-В итоге в любом месте я могу писать `sync-vaults pull`, чтобы стянуть последние изменения с гугл диска, и `sync-vaults push`, чтобы отправить изменения.
+The name of this file is `sync-vaults` and it is important to add execution rights for this file: `chmod +x sync-vaults`.
+ I also added the path to the folder it is in in `.bashrc`:
+	`export PATH=$PATH:/home/ryzh/Downloads/Programs/Obsidian`.
+As a result, anywhere I can write `sync-vaults pull` to pull the latest changes from google disk, and `sync-vaults push` to send the changes.
