@@ -27,7 +27,7 @@ That's it. Now you can create your Obsidian vaults in the Vaults folder and they
 Download FolderSync by Tacit Dynamics
 Everything done with this [tutorial](https://youtu.be/0LZSFvyCmEk?si=IxG-t7yAbtnKdu4p). The interface has changed a bit, but I think there will be no problems to understand what is where.
 
-It's simple. The only thing that matters is that you choose a two-way connection. And correctly select the `Vaults` folder of Google Drive and the folder on your phone with which everything will be synchronized. And also check the box *"Synchronize deletions "*. In the synchronization settings you can choose how often the application will synchronize itself. I chose once every 12 hours. I don't need it more often, because it's not difficult for me to go to FolderSync and press the synchronization button before and after working in Obsidian.
+It's simple. The only thing that matters is that you choose a two-way connection. And correctly select the `Vaults` folder of Google Drive and the folder on your phone with which everything will be synchronized. And also check the box *"Synchronize deletions"*. In the synchronization settings you can choose how often the application will synchronize itself. I chose once every 12 hours. I don't need it more often, because it's not difficult for me to go to FolderSync and press the synchronization button before and after working in Obsidian.
 
 
 # Linux
