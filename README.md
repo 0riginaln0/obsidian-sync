@@ -15,7 +15,7 @@ In Google Drive itself, I created a Vaults folder where all Obsidian storages wi
 
 ## Windows
 Download [Google Drive For Desktop](https://support.google.com/drive/answer/10838124?hl=en)
-Tutorial](https://youtu.be/26PKoz3yb0M?si=zc3H4xqctV0H6mHG)
+[Tutorial](https://youtu.be/26PKoz3yb0M?si=zc3H4xqctV0H6mHG)
 I'm logged into my google account.
 All settings can be skipped, as we don't need them.
 
